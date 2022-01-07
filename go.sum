@@ -1,0 +1,8 @@
+github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 h1:iQTw/8FWTuc7uiaSepXwyf3o52HaUYcV+Tu66S3F5GA=
+github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0/go.mod h1:1NbS8ALrpOvjt0rHPNLyCIeMtbizbir8U//inJ+zuB8=
+github.com/kr/binarydist v0.1.0/go.mod h1:DY7S//GCoz1BCd0B0EVrinCKAZN3pXe+MDaIZbXQVgM=
+github.com/mouuff/go-rocket-update v1.5.2 h1:v5uz7aDdrm1v47g0qc1+8kpvarwWS0WxK97ii4Fpas4=
+github.com/mouuff/go-rocket-update v1.5.2/go.mod h1:CnOyUYCxAJyC1g1mebSGC7gJysLTlX+RpxKgD1B0zLs=
+github.com/sanbornm/go-selfupdate v0.0.0-20210106163404-c9b625feac49 h1:LuxslTBxJrrNeKfqoywIERWWhH43TgiVAiPEVlhgNBA=
+github.com/sanbornm/go-selfupdate v0.0.0-20210106163404-c9b625feac49/go.mod h1:fY313ZGG810aWruFYcyq3coFpHDrWJVoMfSRI81y1r4=
+gopkg.in/inconshreveable/go-update.v0 v0.0.0-20150814200126-d8b0b1d421aa/go.mod h1:tuNm0ntQ7IH9VSA39XxzLMpee5c2DwgIbjD4x3ydo8Y=
