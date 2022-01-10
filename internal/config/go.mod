@@ -1,3 +1,3 @@
-module Mrl0co/devtools/internal/config
+module config
 
 go 1.17

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
 	"github.com/mouuff/go-rocket-update/pkg/updater"
+	. "internal/logging"
 	"log"
 	"os/exec"
 	"runtime"
@@ -68,18 +69,24 @@ func (selfUpdater *SelfUpdater) selfUpdate() error {
 
 	if selfUpdater.updateStatus == updater.Updated {
 		if err := selfUpdater.verifyInstallation(); err != nil {
-			log.Println(err)
-			log.Println("Rolling back...")
+			Log.Error("Update failed", err)
+			Log.Error("Rolling back...")
+
 			return selfUpdater.updater.Rollback()
 		}
-		log.Println("Updated to latest version!")
+
+		Log.Info("Updated to latest version!")
 	}
 	return nil
 }
 
 func (selfUpdater *SelfUpdater) StartUpdateCheck() {
-	log.Println("Current version: " + selfUpdater.GetVersion())
-	log.Println("Looking for updates...")
+	if selfUpdater.GetVersion() == "development" {
+		return
+	}
+
+	Log.Debug("Current version: " + selfUpdater.GetVersion())
+	Log.Debug("Looking for updates...")
 
 	selfUpdater.wg.Add(1)
 
