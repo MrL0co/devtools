@@ -1,9 +1,10 @@
 package main
 
 import (
+	"devtools/cmd/complete"
+	"devtools/cmd/install"
 	"flag"
 	"fmt"
-	"github.com/posener/complete"
 	"os"
 	"sort"
 	"strings"
@@ -40,34 +41,7 @@ func main() {
 	app := cli.NewApp()
 	app.Usage = "Manage your development environment"
 
-	//app.EnableBashCompletion = true
-
-	// create the complete command
-	cmp := complete.New(
-		app.Name,
-		complete.Command{Flags: complete.Flags{"-name": complete.PredictAnything}},
-	)
-
-	// AddFlags adds the completion flags to the program flags,
-	// in case of using non-default flag set, it is possible to pass
-	// it as an argument.
-	// it is possible to set custom flags name
-	// so when one will type 'self -h', he will see '-complete' to install the
-	// completion and -uncomplete to uninstall it.
-	cmp.CLI.InstallName = "complete"
-	cmp.CLI.UninstallName = "uncomplete"
-	cmp.AddFlags(nil)
-
-	// parse the flags - both the program's flags and the completion flags
-	flag.Parse()
-
-	// run the completion, in case that the completion was invoked
-	// and ran as a completion script or handled a flag that passed
-	// as argument, the Run method will return true,
-	// in that case, our program have nothing to do and should return.
-	if cmp.Complete() {
-		return
-	}
+	app.EnableBashCompletion = true
 
 	app.Flags = []cli.Flag{
 		&cli.BoolFlag{
@@ -88,33 +62,9 @@ func main() {
 		return nil
 	}
 
-	stop := false
 	app.Commands = []*cli.Command{
-		{
-			Name:  "complete",
-			Usage: "use for zsh auto completion",
-			Action: func(c *cli.Context) error {
-				PrintCompletions(app)
-				stop = true
-				return nil
-			},
-		},
-		{
-			Name:    "init",
-			Aliases: []string{"c"},
-			Usage:   "complete a task on the list",
-			Action: func(c *cli.Context) error {
-				return nil
-			},
-		},
-		{
-			Name:    "add",
-			Aliases: []string{"a"},
-			Usage:   "add a task to the list",
-			Action: func(c *cli.Context) error {
-				return nil
-			},
-		},
+		complete.Cmd(),
+		install.Cmd(),
 	}
 
 	sort.Sort(cli.FlagsByName(app.Flags))
@@ -128,11 +78,11 @@ func main() {
 	help := flag.Bool("help", false, "")
 	h := flag.Bool("h", false, "")
 
-	if versionFlag || *help || *h || stop {
+	if versionFlag || *help || *h {
 		return
 	}
-
-	updater.StartUpdateCheck()
-
-	updater.Wait()
+	//
+	//updater.StartUpdateCheck()
+	//
+	//updater.Wait()
 }
