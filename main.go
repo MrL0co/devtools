@@ -1,70 +1,32 @@
 package main
 
 import (
-	"devtools/cmd/complete"
-	"devtools/cmd/install"
-	"flag"
-	"fmt"
 	"os"
 	"sort"
-	"strings"
-
-	. "internal/logging"
-	"internal/update"
 
 	"github.com/urfave/cli/v2"
+
+	"github.com/MrL0co/devtools/cmd/complete"
+	. "github.com/MrL0co/devtools/internal/logging"
+	"github.com/MrL0co/devtools/internal/update"
 )
 
 var Version = "development"
 var Build = ""
-
-func PrintCompletions(app *cli.App) {
-	var cmpl []string
-	for _, appFlag := range app.Flags {
-		if documentFlag, ok := appFlag.(cli.DocGenerationFlag); ok {
-			for _, name := range documentFlag.Names() {
-				cmpl = append(
-					cmpl, fmt.Sprintf(" '-%s[%s]'", name, documentFlag.GetUsage()))
-			}
-		}
-
-	}
-	fmt.Print(
-		fmt.Sprintf("_arguments -s %s", strings.Join(cmpl, " ")),
-	)
-}
 
 func main() {
 	Log.SetLogLevel(Info)
 	updater := update.NewSelfUpdater(Version)
 	var versionFlag bool
 	app := cli.NewApp()
+
 	app.Usage = "Manage your development environment"
-
+	app.Version = updater.GetVersion()
 	app.EnableBashCompletion = true
-
-	app.Flags = []cli.Flag{
-		&cli.BoolFlag{
-			Name:        "version",
-			Aliases:     []string{"v"},
-			Usage:       "prints the version and exit",
-			Destination: &versionFlag,
-		},
-	}
-
-	app.Action = func(c *cli.Context) error {
-		if c.Bool("version") {
-			fmt.Println(updater.GetVersion())
-			return nil
-		}
-		Log.Info("boom! I say!")
-
-		return nil
-	}
 
 	app.Commands = []*cli.Command{
 		complete.Cmd(),
-		install.Cmd(),
+		//install.Cmd(),
 	}
 
 	sort.Sort(cli.FlagsByName(app.Flags))
@@ -75,14 +37,25 @@ func main() {
 		Log.Fatal("app.run failed: ", err)
 	}
 
-	help := flag.Bool("help", false, "")
-	h := flag.Bool("h", false, "")
+	stop := false
+	for _, i := range os.Args[1:] {
+		if i == "--generate-bash-completion" {
+			stop = true
+			break
+		} else if i == "--help" || i == "-help" || i == "help" {
+			stop = true
+			break
+		} else if i == "-h" || i == "h" {
+			stop = true
+			break
+		}
+	}
 
-	if versionFlag || *help || *h {
+	if versionFlag || stop {
 		return
 	}
-	//
-	//updater.StartUpdateCheck()
-	//
-	//updater.Wait()
+
+	updater.StartUpdateCheck()
+
+	updater.Wait()
 }

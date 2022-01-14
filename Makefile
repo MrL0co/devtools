@@ -6,7 +6,7 @@ TARGET := $(shell basename ${CURDIR})
 
 
 # These will be provided to the target
-VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null || echo v0.0.1)
+VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null || echo v0.0.1-dev)
 BUILD := $(shell git rev-parse HEAD)
 
 # Use linker flags to provide version/build settings to the target

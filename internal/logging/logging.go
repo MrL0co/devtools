@@ -2,9 +2,10 @@ package logging
 
 import (
 	"fmt"
-	"github.com/fatih/color"
 	"log"
 	"os"
+
+	"github.com/fatih/color"
 )
 
 var Log Logger

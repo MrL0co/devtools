@@ -3,14 +3,16 @@ package update
 import (
 	"errors"
 	"fmt"
-	"github.com/mouuff/go-rocket-update/pkg/provider"
-	"github.com/mouuff/go-rocket-update/pkg/updater"
-	. "internal/logging"
 	"log"
 	"os/exec"
 	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/mouuff/go-rocket-update/pkg/provider"
+	"github.com/mouuff/go-rocket-update/pkg/updater"
+
+	. "github.com/MrL0co/devtools/internal/logging"
 )
 
 type SelfUpdater struct {

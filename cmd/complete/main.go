@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	. "internal/logging"
+	. "github.com/MrL0co/devtools/internal/logging"
 
 	"github.com/adrg/xdg"
 	"github.com/urfave/cli/v2"
