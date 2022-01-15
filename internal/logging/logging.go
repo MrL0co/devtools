@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/fatih/color"
 )
@@ -13,13 +14,33 @@ var Log Logger
 type LogLevel int64
 
 const (
-	Trace LogLevel = iota
-	Debug
-	Info
-	Warn
+	Fatal LogLevel = iota
 	Error
-	Fatal
+	Warn
+	Info
+	Debug
+	Trace
 )
+const maxLevel = 5
+
+var Levels = []LogLevel{
+	Fatal,
+	Error,
+	Warn,
+	Info,
+	Debug,
+	Trace,
+}
+
+func ListLogLevels() string {
+	ll := [maxLevel + 1]string{}
+
+	for i, l := range Levels {
+		ll[i] = fmt.Sprintf("%d - %s", l, l.String())
+	}
+
+	return strings.Join(ll[:], ", ")
+}
 
 func (ll LogLevel) String() string {
 	switch ll {
@@ -57,6 +78,18 @@ func (ll LogLevel) Color() *color.Color {
 	return color.New(color.FgWhite)
 }
 
+func (ll LogLevel) Valid() LogLevel {
+	if ll < 0 {
+		return Fatal
+	}
+
+	if ll > maxLevel {
+		return Trace
+	}
+
+	return ll
+}
+
 type Logger struct {
 	logLevel      LogLevel
 	traceLogger   *log.Logger
@@ -68,7 +101,7 @@ type Logger struct {
 }
 
 func (logger Logger) logMessage(level LogLevel, log *log.Logger, format string, v ...interface{}) {
-	if logger.logLevel <= level {
+	if logger.logLevel >= level {
 		level.Color().Set()
 		defer color.Unset()
 

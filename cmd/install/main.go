@@ -1,9 +1,21 @@
 package install
 
 import (
-	"fmt"
+	"github.com/urfave/cli/v2"
 )
 
-func Cmd() {
-	fmt.Println("hello from install")
+var command = cli.Command{
+	Name:    "install",
+	Aliases: []string{"i"},
+	Usage:   "Install from a predefined list of suggested packages",
+	Action:  action,
+}
+
+func action(c *cli.Context) error {
+
+	return nil
+}
+
+func Cmd() *cli.Command {
+	return &command
 }
