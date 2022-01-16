@@ -17,14 +17,48 @@ RUN make build
 ##
 ## Deploy
 ##
-FROM gcr.io/distroless/base-debian10
+FROM ubuntu:latest
+
+ARG USER_NAME="developer"
+ARG USER_PASSWORD="test123"
+
+ENV USER_NAME $USER_NAME
+ENV USER_PASSWORD $USER_PASSWORD
 
 WORKDIR /
 
-COPY --from=build /app/bin/pinstall /pinstall
+RUN apt update && apt install -y ca-certificates wget && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /app/devtools /usr/local/bin/devtools
+
+
+#RUN devtools complete
+
+# REMOVE DOCKER APT CLEANER TO EMULATE REAL PC (with apt cache files in order to check last apt update command)
+RUN rm /etc/apt/apt.conf.d/docker-clean
+ENV TERM xterm
+
+## AUTOMATE THIgS IN CODE
+RUN apt update && apt install -y zsh git && `rm -rf /var/lib/apt/lists/*`
+
+## SKIP
+RUN adduser --quiet --disabled-password --shell /bin/zsh --home /home/$USER_NAME --gecos "User" $USER_NAME \
+    && echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME
+
+USER ${USER_NAME}
+## end SKIP
+
+# terminal colors with xterm
+ENV TERM xterm
+# set the zsh theme
+ENV ZSH_THEME robbyrussell
+
+RUN echo $USER_PASSWORD | chsh -s $(which zsh) developer
+
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
 
 EXPOSE 8080
 
-USER nonroot:nonroot
-
-ENTRYPOINT [ "/pinstall" ]
+WORKDIR "/home/$USER_NAME"
+CMD ["zsh"]
+#ENTRYPOINT [ "/usr/local/bin/devtools" ]

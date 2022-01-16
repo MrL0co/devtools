@@ -33,7 +33,7 @@ WD = $(subst $(BSLASH),$(FLASH),$(shell pwd))
 #Directories
 DISTDIR = $(WD)/dist
 
-.PHONY: all build clean install uninstall run release $(PLATFORMS)
+.PHONY: all build clean install uninstall run release $(PLATFORMS) docker
 
 release: clean $(PLATFORMS) _gzip
 
@@ -72,3 +72,9 @@ dep:
 
 run: build
 	./$(TARGET)
+
+docker:
+	@echo Building image
+	@docker build . --tag devtools:latest
+	@echo Running
+	@docker run -it devtools:latest #$SHELL# -c 'date -d @`stat -c %Y /var/cache/apt/`'
