@@ -27,7 +27,7 @@ ENV USER_PASSWORD $USER_PASSWORD
 
 WORKDIR /
 
-RUN apt update && apt install -y ca-certificates wget && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y ca-certificates wget sudo && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/devtools /usr/local/bin/devtools
 
@@ -43,9 +43,9 @@ COPY --from=build /app/devtools /usr/local/bin/devtools
 #
 ### SKIP
 RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/$USER_NAME --gecos "User" $USER_NAME \
-    && echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME
+    && echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME && adduser $USER_NAME sudo
 #
-#USER ${USER_NAME}
+USER ${USER_NAME}
 ### end SKIP
 #
 ## terminal colors with xterm

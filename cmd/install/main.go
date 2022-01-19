@@ -2,7 +2,6 @@ package install
 
 import (
 	"fmt"
-	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"os/exec"
@@ -10,6 +9,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/urfave/cli/v2"
 )
 
 var command = cli.Command{
@@ -67,55 +68,28 @@ func start(command string) {
 }
 
 func action(c *cli.Context) error {
-	output, err := exec.Command("apt", "update").CombinedOutput()
-	log.Println(string(output[:])) // write the output with ResponseWriter
-	//if err != nil {
-	//	return err
-	//}
+	err := runCommand("apt", "update")
+	if err != nil {
+		return err
+	}
 
-	output, err = exec.Command("apt", "install", "-y", "zsh", "git").CombinedOutput()
-	log.Println(string(output[:])) // write the output with ResponseWriter
-	//if err != nil {
-	//	return err
-	//}
+	err = runCommand("apt", "install", "-y", "zsh", "git")
+	if err != nil {
+		return err
+	}
 
 	current, err := user.Current()
-	log.Println(os.Getenv("SUDO_USER"))
+	sudoUser := os.Getenv("SUDO_USER")
+	log.Println(sudoUser)
 	log.Println(current.Username)
 
 	zsh, err := exec.Command("which", "zsh").Output()
-
-	cmd := exec.Command("chsh", "-s", strings.Trim(string(zsh), " \n"), current.Username)
-	//stdin, err := cmd.StdinPipe()
-
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-
+	err = runCommand("chsh", "-s", strings.Trim(string(zsh), " \n"), current.Username)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	//go func() {
-	//	defer stdin.Close()
-	//	io.WriteString(stdin, "test123")
-	//}()
-
-	log.Println(cmd.String())
-	//output, err = cmd.CombinedOutput()
-	//if err != nil {
-	//	return err
-	//}
-	//log.Println(string(output[:])) // write the output with ResponseWriter
-	err = cmd.Run()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	cmd = exec.Command("zsh", "-c", "wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh")
-	log.Println(cmd.String())
-	output, err = cmd.CombinedOutput()
-	log.Println(string(output[:])) // write the output with ResponseWriter
+	err = runCommand("sudo", "-u", sudoUser, "zsh", "-c", "wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh")
 	if err != nil {
 		return err
 	}
@@ -127,6 +101,17 @@ func action(c *cli.Context) error {
 	//Exit()
 	//exit <- true
 	return nil
+}
+
+func runCommand(name string, arg ...string) error {
+	cmd := exec.Command(name, arg...)
+
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	log.Println(cmd.String())
+
+	return cmd.Run()
 }
 
 func Cmd() *cli.Command {

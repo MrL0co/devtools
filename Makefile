@@ -75,6 +75,6 @@ run: build
 
 docker:
 	@echo Building image
-	@docker build . --tag devtools:latest
+	@DOCKER_BUILDKIT=1 docker build . --tag devtools:latest
 	@echo Running
-	@docker run -it devtools:latest #$SHELL# -c 'date -d @`stat -c %Y /var/cache/apt/`'
+	@docker run --rm -it devtools:latest #$SHELL# -c 'date -d @`stat -c %Y /var/cache/apt/`'
