@@ -94,6 +94,50 @@ func action(c *cli.Context) error {
 		return err
 	}
 
+	err = runCommand("apt", "install", "-y", "ca-certificates", "curl", "gnupg", "lsb-release")
+	if err != nil {
+		return err
+	}
+
+	err = runCommand("zsh", "-c", "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg")
+	if err != nil {
+		return err
+	}
+
+	err = runCommand("zsh", "-c", "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\" | tee /etc/apt/sources.list.d/docker.list > /dev/null")
+	if err != nil {
+		return err
+	}
+
+	err = runCommand("apt", "update")
+	if err != nil {
+		return err
+	}
+
+	err = runCommand("apt", "install", "-y", "docker-ce", "docker-ce-cli", "containerd.io")
+	if err != nil {
+		return err
+	}
+
+	err = runCommand("zsh", "-c", "curl -L \"https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose")
+	if err != nil {
+		return err
+	}
+
+	err = runCommand("chmod", "+x", "/usr/local/bin/docker-compose")
+	if err != nil {
+		return err
+	}
+
+	err = runCommand("groupadd", "docker")
+	//if err != nil {
+	//	return err
+	//}
+
+	err = runCommand("usermod", "-aG", "docker", sudoUser)
+	if err != nil {
+		return err
+	}
 	//go start()
 	//runtime.Gosched()
 	//fmt.Println("30+1=", Foo(30)) //30+1= 31

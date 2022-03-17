@@ -77,4 +77,4 @@ docker:
 	@echo Building image
 	@DOCKER_BUILDKIT=1 docker build . --tag devtools:latest
 	@echo Running
-	@docker run --rm -it devtools:latest #$SHELL# -c 'date -d @`stat -c %Y /var/cache/apt/`'
+	@docker run --cap-add NET_ADMIN --rm -it devtools:latest #$SHELL# -c 'date -d @`stat -c %Y /var/cache/apt/`'
